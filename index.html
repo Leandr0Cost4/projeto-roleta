@@ -1,33 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roleta</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Roleta Divertida</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      margin: 0;
+    }
+    .login-container {
+      background: rgba(255, 0, 0, 0.1);
+      padding: 20px 30px;
+      border: 2px solid red;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 15px red;
+    }
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: red;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: darkred;
+    }
+    #mensagem {
+      margin-top: 10px;
+      font-size: 14px;
+      color: yellow;
+    }
+  </style>
 </head>
 <body>
-<h1>Roleta Divertida 🎡</h1>
+  <div class="login-container">
+    <h2>Entrar no Game 🎡</h2>
+    <input type="text" id="nome" placeholder="Digite seu nome">
+    <button onclick="login()">Login</button>
+    <div id="mensagem"></div>
+  </div>
 
-<div class="roleta-container">
-  <canvas id="roleta" width="400" height="400"></canvas>
-  <div class="ponteiro">▼</div>
-</div>
+  <script>
+    // ⚡ Limpa jogadores salvos (apenas para testes locais)
+    localStorage.removeItem("jogadores");
+    localStorage.removeItem("meuNome");
 
-<button id="girar">Girar Roleta</button>
+    function login() {
+      const nome = document.getElementById("nome").value.trim();
+      const mensagem = document.getElementById("mensagem");
+      if (!nome) {
+        mensagem.textContent = "⚠️ Você precisa digitar um nome para jogar!";
+        return;
+      }
 
-<!-- Container central para resultado -->
-<div id="resultado-container">
-    <div id="resultado-titulo"></div>
-    <div id="resultado-info"></div>
-</div>
+      let jogadores = JSON.parse(localStorage.getItem("jogadores")) || [];
 
-<!-- Áudio da roleta girando -->
-<audio id="som-roleta" src="audio/click.mp3"></audio>
+      if (jogadores.includes(nome)) {
+        mensagem.textContent = "⚠️ Esse nome já está em uso!";
+        return;
+      }
 
-<!-- Áudio do resultado -->
-<audio id="som-fim" src="audio/fim.mp3"></audio>
+      if (jogadores.length >= 2) {
+        mensagem.textContent = "⚠️ Só podem haver 2 jogadores!";
+        return;
+      }
 
-<script src="roleta.js"></script>
+      jogadores.push(nome);
+      localStorage.setItem("jogadores", JSON.stringify(jogadores));
+      localStorage.setItem("meuNome", nome);
+
+      window.location.href = "roleta.html";
+    }
+  </script>
 </body>
 </html>
