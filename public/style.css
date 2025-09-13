@@ -138,6 +138,33 @@ button:disabled {
   font-size: 16px;
   color: #fff;
   margin-top: 0;
+<<<<<<< HEAD:public/style.css
+=======
+}
+
+#status-container {
+    display: none;
+    text-align: center;
+    color: gray;
+    margin-bottom: 20px;
+}
+
+#girar {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: red;
+  color: #fff;
+  transition: 0.3s;
+}
+
+#girar:disabled {
+  background: gray;
+  cursor: not-allowed;
+>>>>>>> 66cc5aeba5f31d21c93876ae0f99690ecb77de0e:style.css
 }
 
 #status-container {
