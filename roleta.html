@@ -7,33 +7,34 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1 id="titulo">Roleta Divertida 🎡</h1>
+    <h1 id="titulo">Roleta Divertida 🎡</h1>
 
-  <!-- Container do turno do jogador -->
-<div id="turno-container">
-  <div id="turno-nome"></div>
-  <div id="turno-texto">Gire a roleta!</div>
-</div>
+    <div id="status-container" style="display: none; color: gray; margin-bottom: 20px;">
+        <p id="status-message">Aguardando outro jogador...</p>
+    </div>
 
-  <div class="roleta-container">
-    <canvas id="roleta" width="400" height="400"></canvas>
-    <div class="ponteiro">▼</div>
-  </div>
+    <div id="turno-container">
+        <h2 id="turno-nome"></h2>
+        <p id="turno-texto">Gire a roleta!</p>
+    </div>
 
-  <button id="girar">Girar Roleta</button>
+    <div class="roleta-container">
+        <canvas id="roleta"></canvas>
+        <div class="ponteiro">▼</div>
+    </div>
 
-  <!-- Container central para resultado -->
-  <div id="resultado-container">
-      <div id="resultado-titulo"></div>
-      <div id="resultado-info"></div>
-  </div>
+    <button id="girar">Girar Roleta</button>
 
-  <!-- Áudio da roleta girando -->
-  <audio id="som-roleta" src="audio/click.mp3"></audio>
+    <div id="resultado-container">
+        <h2 id="resultado-titulo"></h2>
+        <p id="resultado-info"></p>
+    </div>
 
-  <!-- Áudio do resultado -->
-  <audio id="som-fim" src="audio/fim.mp3"></audio>
+    <audio id="som-roleta" src="audio/click.mp3"></audio>
+    <audio id="som-fim" src="audio/fim.mp3"></audio>
 
-  <script src="roleta.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="roleta.js"></script>
+
 </body>
 </html>
