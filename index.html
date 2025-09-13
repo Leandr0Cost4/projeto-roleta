@@ -91,5 +91,19 @@
       window.location.href = "roleta.html";
     }
   </script>
+  <script>
+    document.getElementById('entrar').addEventListener('click', () => {
+        const nome = document.getElementById('nome').value.trim();
+        if(!nome){
+            alert("Você precisa digitar um nome!");
+            return;
+        }
+        localStorage.setItem('meuNome', nome);
+        window.location.href = "roleta.html";
+    });
+</script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="roleta.js"></script>
+
 </body>
 </html>
