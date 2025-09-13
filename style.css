@@ -13,9 +13,9 @@ body {
 h1 {
   color: white;
   text-shadow: 
-      0 0 5px red,
-      0 0 10px red,
-      0 0 15px red;
+    0 0 5px red,
+    0 0 10px red,
+    0 0 15px red;
   font-size: 48px;
   text-align: center;
   margin: 0 0 20px 0;
@@ -23,8 +23,8 @@ h1 {
 
 .roleta-container {
     position: relative;
-    width: 300px; /* antes 400px */
-    height: 300px; /* antes 400px */
+    width: 300px;
+    height: 300px;
     margin-bottom: 20px;
 }
 
@@ -35,16 +35,14 @@ h1 {
     box-shadow: 0 0 20px 3px #ff0000, 0 0 40px 6px #ff0000 inset;
 }
 
-
 .ponteiro {
     position: absolute;
-    top: -15px; /* antes -20px */
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 45px; /* antes 60px */
+    font-size: 45px;
     color: black;
 }
-
 
 button {
   padding: 15px 30px;
@@ -89,54 +87,79 @@ button:disabled {
   background-color: rgba(0,0,0,0.8);
   border: 2px solid red;
   border-radius: 15px;
-  padding: 20px 30px;
+  padding: 10px 15px;
   text-align: center;
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 150px;
+  max-width: 220px;
   display: none;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px; /* Reduzido ainda mais o espaçamento entre os elementos */
   box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000 inset;
   z-index: 100;
 }
 
 #resultado-titulo {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: #fff;
+  margin-bottom: 0; /* Remove qualquer margem inferior padrão */
 }
 
 #resultado-info {
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
+  margin-top: 0; /* Garante que não haja margem superior extra */
 }
 
 #turno-container {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0,0,0,0.8);
-  border: 2px solid red;
-  border-radius: 15px;
-  padding: 20px 30px;
-  text-align: center;
-  min-width: 200px;
-  max-width: 300px;
   display: none;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000 inset;
-  z-index: 101; /* maior que resultado-container */
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid red;
+  border-radius: 12px;
+  padding: 6px 24px; /* O ajuste principal está aqui, diminuindo o padding vertical */
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  gap: 0;
 }
 
 #turno-nome {
   font-size: 24px;
   font-weight: bold;
   color: #fff;
+  margin-bottom: 0;
 }
 
 #turno-texto {
   font-size: 16px;
   color: #fff;
+  margin-top: 0;
+}
+
+#status-container {
+    display: none;
+    text-align: center;
+    color: gray;
+    margin-bottom: 20px;
+}
+
+#girar {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: red;
+  color: #fff;
+  transition: 0.3s;
+}
+
+#girar:disabled {
+  background: gray;
+  cursor: not-allowed;
 }
