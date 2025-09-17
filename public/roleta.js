@@ -3,14 +3,14 @@
 const socket = io();
 
 const opcoes = [
-    {titulo:"Verdade ou Desafio 🎲", info:"Escolha: responder uma pergunta reveladora com sinceridade ou cumprir um desafio divertido que eu inventar.", peso: 3},
+    {titulo:"Verdade ou Desafio 🎲", info:"Escolha: responder uma pergunta reveladora com sinceridade ou cumprir um desafio divertido que eu inventar.", peso: 2},
     {titulo:"Vale-McDonalds 🍔", info:"Escolha um Mc e combinamos de comer juntos algum dia!", peso: 1},
-    {titulo:"Conte um segredo 🗝️", info:"Compartilhe algo divertido ou curioso sobre nós.", peso: 3},
+    {titulo:"Conte um segredo 🗝️", info:"Compartilhe algo divertido ou curioso sobre nós.", peso: 2},
     {titulo:"Momento música 🎵", info:"Envie uma música que te faz lembrar de mim ou peça que eu te envie uma.", peso: 2},
-    {titulo:"Desafio divertido 😏", info:"Você escolhe um desafio para eu cumprir — algo divertido e inofensivo.", peso: 3},
+    {titulo:"Desafio divertido 😏", info:"Você escolhe um desafio para eu cumprir — algo divertido e inofensivo.", peso: 2},
     {titulo:"Momento nostalgia 🕰️", info:"Conte uma lembrança feliz que tenha de nós ou de algo que fizemos juntos.", peso: 2},
-    {titulo:"Verdade Absoluta 🔥", info:"Vou te fazer uma pergunta e você terá que responder com toda a sinceridade — verdade absoluta!", peso: 4},
-    {titulo:"Pedido especial 🌟", info:"Você acaba de ganhar um Pedido; peça e lhe será concedido.", peso: 3}
+    {titulo:"Verdade Absoluta 🔥", info:"Vou te fazer uma pergunta e você terá que responder com toda a sinceridade — verdade absoluta!", peso: 3},
+    {titulo:"Pedido especial 🌟", info:"Você acaba de ganhar um Pedido; peça e lhe será concedido.", peso: 2}
 ];
 
 // Canvas e variáveis
