@@ -1,5 +1,3 @@
-// roleta.js (versão final e corrigida)
-
 const socket = io();
 
 const opcoes = [
@@ -23,7 +21,7 @@ const raio = canvas.width / 2;
 let anguloAtual = 0;
 let meuNome = localStorage.getItem('meuNome');
 
-// Elementos DOM
+// DOM
 const resultadoContainer = document.getElementById('resultado-container');
 const resultadoTitulo = document.getElementById('resultado-titulo');
 const resultadoInfo = document.getElementById('resultado-info');
@@ -36,13 +34,14 @@ const statusContainer = document.getElementById('status-container');
 const statusMessage = document.getElementById('status-message');
 const tituloRoleta = document.querySelector('h1');
 
-function L(...args){ console.log('[ROULETTE]', ...args); }
+let inatividadeTimer = null;
+const TEMPO_MAX_INATIVO = 40 * 1000;
+let modoPausa = false;
 
-// Desenho da roleta (Versão da roleta local)
+// Desenho da roleta
 function desenharRoleta() {
     const fatias = opcoes.length;
     const anguloFatia = (2 * Math.PI) / fatias;
-
     for (let i = 0; i < fatias; i++) {
         ctx.fillStyle = i % 2 === 0 ? 'darkred' : 'red';
         ctx.beginPath();
@@ -51,10 +50,9 @@ function desenharRoleta() {
         ctx.closePath();
         ctx.fill();
 
-        // Texto
         ctx.save();
         ctx.translate(raio, raio);
-        ctx.rotate(i * anguloFatia + anguloFatia / 2);
+        ctx.rotate(i * anguloFatia + anguloFatia/2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#fff";
         ctx.font = "12px Arial";
@@ -64,158 +62,140 @@ function desenharRoleta() {
 }
 
 function redrawStatic(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.save();
-    ctx.translate(raio, raio);
+    ctx.translate(raio,raio);
     ctx.rotate(0);
-    ctx.translate(-raio, -raio);
+    ctx.translate(-raio,-raio);
     desenharRoleta();
     ctx.restore();
 }
 redrawStatic();
 
-// Neon pulsante suave (Versão da roleta local)
 function neonPulse() {
-    const intensity = 12 + Math.sin(Date.now() / 300) * 2;
-    canvas.style.boxShadow = `0 0 ${intensity}px 2px #ff0000, 0 0 ${intensity * 2}px 4px #ff0000 inset`;
+    const intensity = 12 + Math.sin(Date.now()/300)*2;
+    canvas.style.boxShadow = `0 0 ${intensity}px 2px #ff0000, 0 0 ${intensity*2}px 4px #ff0000 inset`;
     requestAnimationFrame(neonPulse);
 }
 neonPulse();
 
-// --- ANIMAÇÃO: agora baseada nos dados do servidor ---
+// Timer inatividade
+function iniciarTimerInatividade() {
+    if (inatividadeTimer) clearTimeout(inatividadeTimer);
+
+    inatividadeTimer = setTimeout(() => {
+        modoPausa = true;
+        botaoGirar.disabled = true;
+        botaoGirar.textContent = "Atualizar jogo";
+    }, TEMPO_MAX_INATIVO);
+}
+
+// Animação da roleta
 function animarRoleta(indiceEscolhido, callback){
     let inicio = null;
     const duracao = 4000;
     const anguloInicial = anguloAtual;
-
-    // --- CORREÇÃO DEFINITIVA: Calcula o ângulo de parada no cliente
     const fatias = opcoes.length;
-    const anguloFatia = (2 * Math.PI) / fatias;
-    const anguloAlvo = (3 * Math.PI / 2) - (indiceEscolhido * anguloFatia + anguloFatia / 2);
-    
-    // Força um mínimo de 5 voltas completas
+    const anguloFatia = (2*Math.PI)/fatias;
+    const anguloAlvo = (3*Math.PI/2) - (indiceEscolhido*anguloFatia + anguloFatia/2);
+
     const voltasMinimas = 5;
-    const voltasExtras = Math.floor(anguloInicial / (2 * Math.PI)) + voltasMinimas;
-    const anguloFinal = anguloAlvo + (voltasExtras * 2 * Math.PI);
+    const voltasExtras = Math.floor(anguloInicial/(2*Math.PI))+voltasMinimas;
+    const anguloFinal = anguloAlvo + (voltasExtras*2*Math.PI);
 
     function animar(timestamp){
-        if (!inicio) inicio = timestamp;
-        const progresso = timestamp - inicio;
-        const t = Math.min(progresso / duracao, 1);
-        const easeOut = 1 - Math.pow(1 - t, 3);
-        anguloAtual = anguloInicial + (anguloFinal - anguloInicial) * easeOut;
-        
-        // DIMINUI O VOLUME PROGRESSIVAMENTE
-        if (somRoleta) {
-            try {
-                somRoleta.volume = Math.max(0, 1 - easeOut);
-            } catch(e){}
-        }
+        if(!inicio) inicio = timestamp;
+        const progresso = timestamp-inicio;
+        const t = Math.min(progresso/duracao,1);
+        const easeOut = 1 - Math.pow(1-t,3);
+        anguloAtual = anguloInicial + (anguloFinal-anguloInicial)*easeOut;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if(somRoleta){ try{ somRoleta.volume = Math.max(0,1-easeOut); }catch(e){} }
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.save();
-        ctx.translate(raio, raio);
+        ctx.translate(raio,raio);
         ctx.rotate(anguloAtual);
-        ctx.translate(-raio, -raio);
+        ctx.translate(-raio,-raio);
         desenharRoleta();
         ctx.restore();
 
-        if (t < 1){
-            requestAnimationFrame(animar);
-        } else {
-            // PARA O SOM AO FIM DA ANIMAÇÃO
-            if (somRoleta) {
-                try {
-                    somRoleta.pause();
-                    somRoleta.currentTime = 0;
-                } catch(e){}
-            }
-            // Chama o callback, que agora exibe o resultado
-            if (callback) callback();
+        if(t<1) requestAnimationFrame(animar);
+        else {
+            if(somRoleta){ try{ somRoleta.pause(); somRoleta.currentTime=0;}catch(e){} }
+            if(callback) callback();
         }
     }
     requestAnimationFrame(animar);
 }
 
-// -------------------
-// Socket.io: Comunicação com o servidor
-// -------------------
-socket.on('connect', () => {
-    L('Socket conectado', socket.id);
-    if (meuNome) {
-        L('Enviando nome ao servidor:', meuNome);
-        socket.emit('login', meuNome);
-    } else {
-        L('Nenhum nome no localStorage (faça login primeiro).');
-        window.location.href = "index.html";
-    }
+// --- Socket.io ---
+socket.on('connect',()=>{
+    if(meuNome) socket.emit('login',meuNome);
+    else window.location.href="index.html";
 });
 
-socket.on('disconnect', (reason) => {
-    L('Socket desconectado:', reason);
-    alert('Você foi desconectado. Tente recarregar a página.');
+socket.on('disconnect',(reason)=>{
+    alert('Você foi desconectado. Recarregue a página.');
 });
 
-socket.on('login-resposta', (data) => {
-    if (!data.sucesso) {
-        alert(data.mensagem);
-        window.location.href = "index.html";
-    }
+socket.on('login-resposta',(data)=>{
+    if(!data.sucesso){ alert(data.mensagem); window.location.href="index.html"; }
 });
 
-socket.on('vez-de', (nomeDaVez) => {
-    L('É a vez de:', nomeDaVez);
-    tituloRoleta.style.display = 'none';
-    statusContainer.style.display = 'none';
-    turnoContainer.style.display = 'flex';
-    turnoNome.textContent = nomeDaVez;
+socket.on('vez-de',(nomeDaVez)=>{
+    tituloRoleta.style.display='none';
+    statusContainer.style.display='none';
+    turnoContainer.style.display='flex';
+    turnoNome.textContent=nomeDaVez;
     botaoGirar.disabled = (meuNome !== nomeDaVez);
 });
 
-socket.on('status', (msg) => {
-    tituloRoleta.style.display = 'block';
-    turnoContainer.style.display = 'none';
-    statusContainer.style.display = 'flex';
+socket.on('status',(msg)=>{
+    tituloRoleta.style.display='block';
+    turnoContainer.style.display='none';
+    statusContainer.style.display='flex';
     statusMessage.textContent = msg;
     botaoGirar.disabled = true;
 });
 
-// Clique: agora APENAS informa o servidor
-botaoGirar.addEventListener('click', () => {
+// Evento de inatividade 40s do servidor
+socket.on('inatividade-40s',()=>{
+    modoPausa = true;
     botaoGirar.disabled = true;
-    resultadoContainer.style.display = 'none';
-    
-    // REINICIA O ÁUDIO E A ANIMAÇÃO AQUI, ANTES DE COMEÇAR O GIRO
-    if (somRoleta) {
-        try {
-            somRoleta.pause();
-            somRoleta.currentTime = 0;
-            somRoleta.volume = 1;
-            somRoleta.play();
-        } catch(e) {}
-    }
-    L('Solicitando giro ao servidor...');
-    socket.emit('girar-roleta');
+    botaoGirar.textContent = "Atualizar jogo";
 });
 
-// Recebe o resultado do servidor (todos os clientes)
-socket.on('resultadoRoleta', (data) => {
-    L('Recebeu resultado do servidor:', data);
-    // Envia apenas o índice para a função de animação
-    if (typeof data.indice === 'number'){
-        animarRoleta(data.indice, () => {
-            // Callback após a animação
-            try {
-                resultadoTitulo.textContent = opcoes[data.indice].titulo;
-                resultadoInfo.textContent = opcoes[data.indice].info;
-                resultadoContainer.style.display = 'flex';
-            } catch(e){ console.warn('Erro ao atualizar DOM do resultado:', e); }
+// Clique no botão
+botaoGirar.addEventListener('click',()=>{
+    if(modoPausa && botaoGirar.textContent==="Atualizar jogo"){
+        localStorage.removeItem('meuNome');
+        localStorage.removeItem('jogadores');
+        window.location.href="index.html";
+        return;
+    }
 
-            if (somFim) {
-                try { somFim.currentTime = 0; somFim.play(); } catch(e){}
-            }
+    botaoGirar.disabled=true;
+    resultadoContainer.style.display='none';
+    if(somRoleta){ try{ somRoleta.pause(); somRoleta.currentTime=0; somRoleta.volume=1; somRoleta.play();}catch(e){} }
+    socket.emit('girar-roleta');
+
+    iniciarTimerInatividade();
+});
+
+socket.on('resultadoRoleta',(data)=>{
+    if(typeof data.indice==='number'){
+        animarRoleta(data.indice,()=>{
+            resultadoTitulo.textContent=opcoes[data.indice].titulo;
+            resultadoInfo.textContent=opcoes[data.indice].info;
+            resultadoContainer.style.display='flex';
+
+            if(somFim){ try{ somFim.currentTime=0; somFim.play(); }catch(e){} }
+
+            modoPausa=false;
+            botaoGirar.disabled=false;
+
+            iniciarTimerInatividade();
         });
-    } else {
-        console.warn('Dados de roleta inválidos recebidos.');
     }
 });
